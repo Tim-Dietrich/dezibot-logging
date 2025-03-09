@@ -59,9 +59,7 @@ void loop() {
 
     // const String test = "Hello World!";
     // dezibot.display.println(test);
-    dezibot.debugServer.refreshPage();
     delay(5000);
     dezibot.debugServer.handleClient();
-    delay(1);
 }
 
