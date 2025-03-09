@@ -8,6 +8,7 @@
 #include <Logger/Logger.h>
 
 Dezibot dezibot;
+int i;
 
 void generateRandomLog() {
     static const std::vector<std::string> levels = {"INFO", "WARNING", "ERROR"};
@@ -50,16 +51,20 @@ void processAllLogs() {
 void setup() {
     dezibot.begin();
     dezibot.debugServer.setup();
+    i = 0;
 }
 
 void loop() {
-
-    generateRandomLog();
-    processAllLogs();
+    if (i == 5000) {
+        generateRandomLog();
+        processAllLogs();
+        i = 0;
+    }
 
     // const String test = "Hello World!";
     // dezibot.display.println(test);
-    delay(5000);
+    delay(1);
     dezibot.debugServer.handleClient();
+    i++;
 }
 
