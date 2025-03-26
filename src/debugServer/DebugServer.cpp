@@ -18,6 +18,8 @@
 #include <WiFi.h>
 #include <SPIFFS.h>
 
+#include "Utility.h"
+
 WebServer server;
 extern Dezibot dezibot;
 
@@ -65,11 +67,16 @@ void DebugServer::setup() {
 
     // initialize color sensor
     Sensor colorSensor("Color Sensor", "ColorDetection");
-    SensorFunction getAmbientLight("getAmbientLight()");
-    SensorFunction getColorValueRed("getColorValue(RED)");
-    SensorFunction getColorValueGreen("getColorValue(GREEN)");
-    SensorFunction getColorValueBlue("getColorValue(BLUE)") ;
-    SensorFunction getColorValueWhite("getColorValue(WHITE)");
+    SensorFunction getAmbientLight("getAmbientLight()",
+        []() { return std::to_string(dezibot.colorDetection.getAmbientLight()); });
+    SensorFunction getColorValueRed("getColorValue(RED)",
+        []() { return std::to_string(dezibot.colorDetection.getColorValue(VEML_RED)); });
+    SensorFunction getColorValueGreen("getColorValue(GREEN)",
+        []() { return std::to_string(dezibot.colorDetection.getColorValue(VEML_GREEN)); });
+    SensorFunction getColorValueBlue("getColorValue(BLUE)",
+        []() { return std::to_string(dezibot.colorDetection.getColorValue(VEML_BLUE)); }) ;
+    SensorFunction getColorValueWhite("getColorValue(WHITE)",
+        []() { return std::to_string(dezibot.colorDetection.getColorValue(VEML_WHITE)); });
     colorSensor.addFunction(getAmbientLight);
     colorSensor.addFunction(getColorValueRed);
     colorSensor.addFunction(getColorValueGreen);
@@ -79,12 +86,18 @@ void DebugServer::setup() {
 
     // initialize light sensor
     Sensor lightSensor("Light Sensor", "LightDetection");
-    SensorFunction getValueIrFront("getValue(IR_FRONT)");
-    SensorFunction getValueIrLeft("getValue(IR_LEFT)");
-    SensorFunction getValueIrRight("getValue(IR_RIGHT)");
-    SensorFunction getValueIrBack("getValue(IR_BACK)");
-    SensorFunction getValueDlBottom("getValue(DL_BOTTOM)");
-    SensorFunction getValueDlFront("getValue(DL_FRONT)");
+    SensorFunction getValueIrFront("getValue(IR_FRONT)",
+        []() { return std::to_string(LightDetection::getValue(IR_FRONT)); });
+    SensorFunction getValueIrLeft("getValue(IR_LEFT)",
+        []() { return std::to_string(LightDetection::getValue(IR_LEFT)); });
+    SensorFunction getValueIrRight("getValue(IR_RIGHT)",
+        []() { return std::to_string(LightDetection::getValue(IR_RIGHT)); });
+    SensorFunction getValueIrBack("getValue(IR_BACK)",
+        []() { return std::to_string(LightDetection::getValue(IR_BACK)); });
+    SensorFunction getValueDlBottom("getValue(DL_BOTTOM)",
+        []() { return std::to_string(LightDetection::getValue(DL_BOTTOM)); });
+    SensorFunction getValueDlFront("getValue(DL_FRONT)",
+        []() { return std::to_string(LightDetection::getValue(DL_FRONT)); });
     lightSensor.addFunction(getValueIrFront);
     lightSensor.addFunction(getValueIrLeft);
     lightSensor.addFunction(getValueIrRight);
@@ -95,20 +108,32 @@ void DebugServer::setup() {
 
     // initialize motor
     Sensor motor("Motor", "Motion");
-    SensorFunction getSpeedLeft("left.getSpeed()");
-    SensorFunction getSpeedRight("right.getSpeed()");
+    SensorFunction getSpeedLeft("left.getSpeed()",
+        [] { return std::to_string(Motion::left.getSpeed()); });
+    SensorFunction getSpeedRight("right.getSpeed()",
+        [] { return std::to_string(Motion::right.getSpeed()); });
     motor.addFunction(getSpeedLeft);
     motor.addFunction(getSpeedRight);
     addSensor(motor);
 
     // initialize motion sensor
     Sensor motionSensor("Motion Sensor", "MotionDetection");
-    SensorFunction getAcceleration("getAcceleration()");
-    SensorFunction getRotation("getRotation()");
-    SensorFunction getTemperature("getTemperature()");
-    SensorFunction getWhoAmI("getWhoAmI()");
-    SensorFunction getTilt("getTilt()");
-    SensorFunction getTiltDirection("getTiltDirection()");
+    SensorFunction getAcceleration("getAcceleration()",
+        []() { IMUResult result = Motion::detection.getAcceleration();
+            return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " + std::to_string(result.z); });
+    SensorFunction getRotation("getRotation()",
+        []() { IMUResult result = Motion::detection.getRotation();
+            return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " + std::to_string(result.z); });
+    SensorFunction getTemperature("getTemperature()",
+        [] { return std::to_string(Motion::detection.getTemperature()); });
+    SensorFunction getWhoAmI("getWhoAmI()",
+        [] { return std::to_string(Motion::detection.getWhoAmI()); });
+    SensorFunction getTilt("getTilt()",
+        []() { Orientation result = Motion::detection.getTilt();
+            return "x: " + std::to_string(result.xRotation) + ", y: " + std::to_string(result.yRotation); });
+    SensorFunction getTiltDirection("getTiltDirection()",
+        []() { Direction result = Motion::detection.getTiltDirection();
+            return std::to_string(result); });
     motionSensor.addFunction(getAcceleration);
     motionSensor.addFunction(getRotation);
     motionSensor.addFunction(getTemperature);
