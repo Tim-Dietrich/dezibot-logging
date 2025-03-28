@@ -69,9 +69,13 @@ protected:
     void writeRegister(uint8_t reg, uint8_t value);
     void initFIFO();
 
+    void startFIFO();
+
+    void stopFIFO();
+
     SPIClass * handler = NULL;
 
-    uint gForceCalib = 4050;
+    uint gForceCalib = 2050;
      
     
 public:
@@ -183,5 +187,7 @@ public:
      * @return the amount of acutally fetched packages 
     */
     uint getDataFromFIFO(FIFO_Package* buffer);
+
+    friend class Motion;
 };
 #endif //MotionDetection
