@@ -12,7 +12,7 @@
 #include "SensorFunction.h"
 
 SensorFunction::SensorFunction(const std::string& name, std::function<std::string()> func) : name(name), function(func) {
-    sensorState = true; // active by default
+    sensorState = false; // disabled by default
 }
 
 void SensorFunction::setSensorState(bool state) {

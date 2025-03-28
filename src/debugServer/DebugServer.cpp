@@ -157,10 +157,12 @@ void DebugServer::setup() {
     Sensor motionSensor("Motion Sensor", "MotionDetection");
     SensorFunction getAcceleration("getAcceleration()",
         []() { IMUResult result = Motion::detection.getAcceleration();
-            return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " + std::to_string(result.z); });
+            return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " +
+                std::to_string(result.z); });
     SensorFunction getRotation("getRotation()",
         []() { IMUResult result = Motion::detection.getRotation();
-            return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " + std::to_string(result.z); });
+            return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " +
+                std::to_string(result.z); });
     SensorFunction getTemperature("getTemperature()",
         [] { return std::to_string(Motion::detection.getTemperature()); });
     SensorFunction getWhoAmI("getWhoAmI()",
