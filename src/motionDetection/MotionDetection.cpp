@@ -133,15 +133,10 @@ Orientation MotionDetection::getTilt(){
 
 Direction MotionDetection::getTiltDirection(uint tolerance){
     Direction result;
-    if (this->getAcceleration().z > 0){
-        result = Flipped;
-    }
     Orientation Rot = this->getTilt();
     Serial.println(Rot.xRotation);
     Serial.println(Rot.xRotation == INT_MAX);
-    if ((Rot.xRotation == INT_MAX)){
-        result = Error;
-    }
+
     if(abs(abs(Rot.xRotation)-abs(Rot.yRotation))>tolerance){
         //determine which axis is more tiltet
         if (abs(Rot.xRotation)>abs(Rot.yRotation)){
@@ -160,8 +155,15 @@ Direction MotionDetection::getTiltDirection(uint tolerance){
             }
         }
     } else {
-        //dezibot is (with tolerance) leveled
-        result = Neutral;
+        if (this->getAcceleration().z > 0) {
+            result = Flipped;
+        } else if ((Rot.xRotation == INT_MAX)) {
+            result = Error;
+        } else {
+            //dezibot is (with tolerance) leveled
+            result = Neutral;
+        }
+
     }
 
     // TODO: convert result enum to string
