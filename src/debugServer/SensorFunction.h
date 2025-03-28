@@ -14,13 +14,15 @@
 #define SENSORFUNCTIONS_H
 
 #include <string>
+#include <functional>
 
 class SensorFunction {
 private:
     std::string name;
     bool sensorState; // sensor enabled/disabled for live data
+    std::function<std::string()> function;
 public:
-    explicit SensorFunction(const std::string& name);
+    explicit SensorFunction(std::string name, std::function<std::string()> function);
 
     /**
      * @brief Set the sensor state (enabled/disabled) for live data.
@@ -45,7 +47,7 @@ public:
      * @brief Get the value of the sensor function formatted as string.
      * @return std::string
      */
-    std::string& getStringValue();
+    std::string getStringValue();
 };
 
 #endif //SENSORFUNCTIONS_H

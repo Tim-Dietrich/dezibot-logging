@@ -11,8 +11,9 @@
 
 #include "SensorFunction.h"
 
-SensorFunction::SensorFunction(const std::string& name) : name(name) {
-    sensorState = true; // active by default
+SensorFunction::SensorFunction(std::string name, std::function<std::string()> func)
+    : name(std::move(name)), function(std::move(func)) {
+    sensorState = false; // disabled by default
 }
 
 void SensorFunction::setSensorState(bool state) {
@@ -27,6 +28,6 @@ std::string& SensorFunction::getFunctionName() {
     return name;
 }
 
-std::string& SensorFunction::getStringValue() {
-    return name;
+std::string SensorFunction::getStringValue() {
+    return function();
 }
