@@ -22,7 +22,7 @@ private:
     bool sensorState; // sensor enabled/disabled for live data
     std::function<std::string()> function;
 public:
-    explicit SensorFunction(const std::string& name, std::function<std::string()> function);
+    explicit SensorFunction(std::string name, std::function<std::string()> function);
 
     /**
      * @brief Set the sensor state (enabled/disabled) for live data.

@@ -11,7 +11,8 @@
 
 #include "SensorFunction.h"
 
-SensorFunction::SensorFunction(const std::string& name, std::function<std::string()> func) : name(name), function(func) {
+SensorFunction::SensorFunction(std::string name, std::function<std::string()> func)
+    : name(std::move(name)), function(std::move(func)) {
     sensorState = false; // disabled by default
 }
 
