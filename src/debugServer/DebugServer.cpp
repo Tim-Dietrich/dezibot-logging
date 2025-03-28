@@ -18,8 +18,6 @@
 #include <WiFi.h>
 #include <SPIFFS.h>
 
-#include "Utility.h"
-
 WebServer server;
 extern Dezibot dezibot;
 
@@ -106,12 +104,6 @@ void DebugServer::setup() {
 
     // initialize color sensor
     Sensor colorSensor("Color Sensor", "ColorDetection");
-    SensorFunction getAmbientLight("getAmbientLight()");
-    SensorFunction getRGB("getRGB()");
-    SensorFunction getColorValueRed("getColorValue(RED)");
-    SensorFunction getColorValueGreen("getColorValue(GREEN)");
-    SensorFunction getColorValueBlue("getColorValue(BLUE)") ;
-    SensorFunction getColorValueWhite("getColorValue(WHITE)");
     SensorFunction getAmbientLight("getAmbientLight()",
         []() { return std::to_string(dezibot.colorDetection.getAmbientLight()); });
     SensorFunction getColorValueRed("getColorValue(RED)",
@@ -123,7 +115,6 @@ void DebugServer::setup() {
     SensorFunction getColorValueWhite("getColorValue(WHITE)",
         []() { return std::to_string(dezibot.colorDetection.getColorValue(VEML_WHITE)); });
     colorSensor.addFunction(getAmbientLight);
-    colorSensor.addFunction(getRGB);
     colorSensor.addFunction(getColorValueRed);
     colorSensor.addFunction(getColorValueGreen);
     colorSensor.addFunction(getColorValueBlue);
