@@ -22,6 +22,7 @@ void MotionDetection::begin(void){
     this->writeRegister(0x23,0x37);
     //Enable Gyro and Acceldata in FIFO
     this->initFIFO();
+    this->stopFIFO();
 
     Logger::getInstance().logTrace("Successfully started MotionDetection module");
 };
@@ -249,11 +250,11 @@ void MotionDetection::resetRegisterBankAccess(){
 };
 
 void MotionDetection::initFIFO(){
-    delay(60);
-    //set INTF_CONFIG0 FIFO_COUNT_REC_RECORD und Little Endian
-    this->writeRegister(INTF_CONFIG0,0x60);
-    //set FIFO_CONFIG1 to Mode Snapshot and BYPASS Off
-    this->writeRegister(FIFO_CONFIG1,0x00);
+    // delay(60);
+    // //set INTF_CONFIG0 FIFO_COUNT_REC_RECORD und Little Endian
+    // this->writeRegister(INTF_CONFIG0,0x60);
+    // //set FIFO_CONFIG1 to Mode Snapshot and BYPASS Off
+    // this->writeRegister(FIFO_CONFIG1,0x00);
     //set TMST_CONFIG1_MREG1 TMST_CONFIIG1_TMST_EN
     this->writeToRegisterBank(MREG1,TMST_CONFIG1,0x00);
     //set FiFO config 5 GYRO_EN,TMST_FSYNC, ACCEL_EN, WM_GT_TH_EN
@@ -262,16 +263,30 @@ void MotionDetection::initFIFO(){
     this->writeRegister(FIFO_CONFIG2,0x0A);
 };
 
+void MotionDetection::startFIFO(){
+    //set INTF_CONFIG0 FIFO_COUNT_FORMAT to Records and SENSOR_DATA_ENDIAN to Big Endian
+    this->writeRegister(INTF_CONFIG0,0x60);
+    //set FIFO_CONFIG1 to BYPASS Off
+    this->writeRegister(FIFO_CONFIG1,0x00);
+}
+
+void MotionDetection::stopFIFO(){
+    //set INTF_CONFIG0 FIFO_COUNT_FORMAT to bytes and SENSOR_DATA_ENDIAN to Little Endian (default)
+    this->writeRegister(INTF_CONFIG0,0x30);
+    //set FIFO_CONFIG1 BYPASS On
+    this->writeRegister(FIFO_CONFIG1,0x01);
+}
+
 uint MotionDetection::getDataFromFIFO(FIFO_Package* buffer){
     int16_t fifocount = 0;
     int8_t fifohigh = this->readRegister(FIFO_COUNTH);
     int8_t fifolow = this->readRegister(FIFO_COUNTL);  
     fifocount = (fifohigh<<8)|fifolow;
-    //fifocount |= this->readRegister(FIFO_COUNTL);
-    //fifocount = (this->readRegister(FIFO_COUNTH)<<8);
-    Serial.println(fifolow);
-    Serial.println(fifohigh);
-    Serial.println(fifocount);
+    // //fifocount |= this->readRegister(FIFO_COUNTL);
+    // //fifocount = (this->readRegister(FIFO_COUNTH)<<8);
+    // Serial.println(fifolow);
+    // Serial.println(fifohigh);
+    // Serial.println(fifocount);
     handler->beginTransaction(SPISettings(frequency,SPI_MSBFIRST,SPI_MODE0));
     digitalWrite(34,LOW);
     handler->transfer(cmdRead(FIFO_DATA));

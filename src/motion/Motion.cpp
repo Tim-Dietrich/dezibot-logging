@@ -38,6 +38,7 @@ void Motion::moveTask(void * args) {
     Motion::left.setSpeed(LEFT_MOTOR_DUTY);
     Motion::right.setSpeed(RIGHT_MOTOR_DUTY);
     Motion::xLastWakeTime = xTaskGetTickCount();
+    detection.startFIFO();
     while(1){
         if(runtime>40||runtime==0){
             vTaskDelayUntil(&xLastWakeTime,40);
@@ -82,6 +83,7 @@ void Motion::moveTask(void * args) {
             vTaskDelayUntil(&xLastWakeTime,runtime);
             Motion::left.setSpeed(0);
             Motion::right.setSpeed(0);
+            detection.stopFIFO();
             vTaskDelete(xMoveTaskHandle);
         }
     }
@@ -212,5 +214,6 @@ void Motion::stop(void){
     }
     Motion::left.setSpeed(0);
     Motion::right.setSpeed(0);
+    detection.stopFIFO();
 }
  
