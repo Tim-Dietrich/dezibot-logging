@@ -211,11 +211,14 @@ void DebugServer::beginClientHandle() {
 // handle client requests
 void DebugServer::handleClientTask(void* parameter) {
      auto debugServer = static_cast<DebugServer*>(parameter);
+    TickType_t xLastWakeTime;
+    const TickType_t xFrequency = 10;
 
     // continuously handle client requests
     while (debugServer->serveractive) {
         debugServer->server.handleClient();
-        delay(10);
+        xLastWakeTime = xTaskGetTickCount();
+        xTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 
     // Delete task when server is no longer active
