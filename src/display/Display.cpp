@@ -67,7 +67,7 @@ void Display::clear(void){
     this -> charsOnCurrLine = 0;
     this -> currLine = 0;
 
-    // Logger::getInstance().logInfo("Cleared display");
+    Logger::getInstance().logInfo("Cleared display");
 
     return;
 };
@@ -83,13 +83,15 @@ void Display::updateLine(uint charAmount)
     {
         this->charsOnCurrLine = charAmount+this->charsOnCurrLine;
     }
-
-    // Logger::getInstance().logInfo("Updated display line(s) with value: " + std::to_string(this->charsOnCurrLine));
 };
 
 void Display::print(char *value){
     char *nextchar;
 	/* write data to the buffer */
+    Logger::getInstance().logInfo(
+        "Printing to display with text: "
+            + std::string(value)
+        );
     while(value && *value != '\0') //check if pointer is still valid and string is not terminated 
         {
 	        //check if next character is a linebreak
@@ -139,10 +141,10 @@ void Display::print(String value){
 
     this->print(msgBuffer);
 
-    // Logger::getInstance().logInfo(
-    //     "Printed to display with value: "
-    //     + std::string(value.c_str())
-    // );
+    Logger::getInstance().logInfo(
+        "Printed to display with value: "
+        + std::string(value.c_str())
+    );
 };
 
 void Display::println(String value){
@@ -152,10 +154,10 @@ void Display::println(String value){
 
     this->println(msgBuffer);
 
-    // Logger::getInstance().logInfo(
-    //     "Printed line to display with value: "
-    //     + std::string(value.c_str())
-    // );
+    Logger::getInstance().logInfo(
+        "Printed line to display with value: "
+        + std::string(value.c_str())
+    );
 };
 
 void Display::print(int value){
@@ -163,10 +165,10 @@ void Display::print(int value){
 
     this->print(itoa(value, cstr, 10));
 
-    // Logger::getInstance().logInfo(
-    //     "Printed integer to display with value: "
-    //     + std::to_string(value)
-    // );
+    Logger::getInstance().logInfo(
+        "Printed integer to display with value: "
+        + std::to_string(value)
+    );
 };
 
 void Display::println(int value){
@@ -174,20 +176,20 @@ void Display::println(int value){
 
     this->println(itoa(value, cstr, 10));
 
-    // Logger::getInstance().logInfo(
-    //     "Printed integer line to display with value: "
-    //     + std::to_string(value)
-    // );
+    Logger::getInstance().logInfo(
+        "Printed integer line to display with value: "
+        + std::to_string(value)
+    );
 };
 
 void Display::println(char *value){
     this -> print(value);
     this -> print("\n");
 
-    // Logger::getInstance().logInfo(
-    //     "Printed character to display with value: "
-    //     + std::string(value)
-    // );
+    Logger::getInstance().logInfo(
+        "Printed character to display with value: "
+        + std::string(value)
+    );
 };
 
 void Display::flipOrientation(void){
@@ -200,9 +202,9 @@ void Display::flipOrientation(void){
     }
     this->orientationFlipped = !this->orientationFlipped;
 
-    // Logger::getInstance().logInfo(
-    //     "Flipped display orientation"
-    // );
+    Logger::getInstance().logInfo(
+        "Flipped display orientation"
+    );
 };
 
 void Display::invertColor(void){
@@ -213,7 +215,7 @@ void Display::invertColor(void){
     }
     this->colorInverted = !this->colorInverted;
 
-    // Logger::getInstance().logInfo(
-    //     "Inverted display color"
-    // );
+    Logger::getInstance().logInfo(
+        "Inverted display color"
+    );
 };

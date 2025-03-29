@@ -13,7 +13,7 @@
 
 SensorFunction::SensorFunction(std::string name, std::function<std::string()> func)
     : name(std::move(name)), function(std::move(func)) {
-    sensorState = false; // disabled by default
+    sensorState = true; // disabled by default
 }
 
 void SensorFunction::setSensorState(bool state) {
