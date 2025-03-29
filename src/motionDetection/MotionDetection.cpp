@@ -134,8 +134,8 @@ Orientation MotionDetection::getTilt(){
 Direction MotionDetection::getTiltDirection(uint tolerance){
     Direction result;
     Orientation Rot = this->getTilt();
-    Serial.println(Rot.xRotation);
-    Serial.println(Rot.xRotation == INT_MAX);
+    // Serial.println(Rot.xRotation);
+    // Serial.println(Rot.xRotation == INT_MAX);
 
     if(abs(abs(Rot.xRotation)-abs(Rot.yRotation))>tolerance){
         //determine which axis is more tiltet
@@ -220,8 +220,8 @@ void MotionDetection::writeToRegisterBank(registerBank bank, uint8_t reg, uint8_
         delay(100);
     }
     uint8_t result = this->readRegister(PWR_MGMT0);
-    Serial.print("MADDR_W: ");
-    Serial.println(readRegister(MADDR_W)); 
+    // Serial.print("MADDR_W: ");
+    // Serial.println(readRegister(MADDR_W));
     //set Idle Bit
     this->writeRegister(PWR_MGMT0,result|0x10);
     switch(bank){
@@ -239,8 +239,8 @@ void MotionDetection::writeToRegisterBank(registerBank bank, uint8_t reg, uint8_
     this->writeRegister(M_W,value);
     delayMicroseconds(10);
     this->writeRegister(PWR_MGMT0,result&0xEF);
-    Serial.print("MADDR_W: ");
-    Serial.println(readRegister(MADDR_W));
+    // Serial.print("MADDR_W: ");
+    // Serial.println(readRegister(MADDR_W));
     this->resetRegisterBankAccess();
 };
 
