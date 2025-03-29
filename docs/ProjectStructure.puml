@@ -2,7 +2,7 @@
 'https://plantuml.com/class-diagram
 
 Package LoggingProject {
-    DebugServer <-> LogDatabase : requests all log entries
+    LoggingPage <-> LogDatabase : requests all log entries
 
     class DebugServer {
         + setup()
@@ -23,10 +23,34 @@ Package LoggingProject {
     MainPage -up-|> PageProvider : implements
     SettingsPage -up-|> PageProvider : implements
 
-    class LoggingPage {}
-    class LiveDataPage {}
-    class MainPage {}
-    class SettingsPage {}
+    class LoggingPage {
+        - sendLogs()
+        - sendNewLogs()
+        - processLogs()
+        + handler()
+        + cssHandler()
+        + jsHandler()
+    }
+
+    class LiveDataPage {
+        + handler()
+        + cssHandler()
+        + jsHandler()
+    }
+
+    class MainPage {
+        + handler()
+        + cssHandler()
+        + jsHandler()
+    }
+
+    class SettingsPage {
+        - sendSensorData()
+        - toggleSensorFunction()
+        + handler()
+        + cssHandler()
+        + jsHandler()
+    }
 
     Note right of PageProvider : Provides complete HTML Pages\n with JS,CSS and required libraries
 
