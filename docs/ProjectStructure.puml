@@ -2,7 +2,7 @@
 'https://plantuml.com/class-diagram
 
 Package LoggingProject {
-    DebugServer <-> DatabaseHandler : calls DB Data
+    DebugServer <-> LogDatabase : requests all log entries
 
     class DebugServer {
         + setup()
@@ -48,7 +48,7 @@ Package LoggingProject {
         + getFunctionName()
     }
 
-    DebugServer "1" *-- "many" Sensor : "contains"
+    DebugServer "1" *-up- "many" Sensor : "contains"
     Sensor "1" *-- "many" SensorFunction : "contains"
 
     class Utility {
@@ -57,57 +57,58 @@ Package LoggingProject {
         + logLevelToString(level)
     }
     DebugServer *-- Utility : "utilizes"
-    Note bottom of Utility : Provides conversion functions\n for enums
+    Note bottom of Utility : Provides string conversion\nfunctions for enums
 
-    Logger --> DatabaseHandler : adds DB entries
+    struct LogEntry {
+        Message
+        TimeStamp
+        LogLevel
+    }
+
+    enum Level {
+        INFO
+        WARNING
+        ERROR
+        DEBUG
+        TRACE
+    }
+
+    LogEntry -d-> Level
+
+    LogEntry .left-> LogDatabase : added to log entry vector
 
     class Logger {
-        + List Instruments
-        + log(...)
+        + Logger getInstance
+        + logInfo()
+        + logWarning()
+        + logError()
+        + logDebug()
+        + logTrace()
     }
 
-    Logger <.-> LoggingPOCO : builds POCOs from log()
-
-    abstract LoggingPOCO {
-        Message
-        Time
-        Component
-        Parameters
-        EntryType
-    }
-
-    Note right of LoggingPOCO : Contains all data used for\n whatever function is logged
-
-    LoggingPOCO .-> EntryType : uses
-
-    enum EntryType {
-        Automatic
-        UserCall
-    }
-
-    Note right of EntryType : Defines how the logging command\n was created
+    Logger .-> LogEntry : Creates Log Entry
 
     DebugServer --> Logger : Provides required instruments\n for measurements
 
-    class DatabaseHandler {
-        - Database db
-        writePOCOToDB()
-        getPOCOs()
+    class LogDatabase {
+        - vector LogEntries
+        + addLog()
+        + getLogs()
+        + getNewLogs()
     }
 }
 
 Package Dezibot {
-    Dezibot -right-> DebugServer : calls
+    Dezibot -right-> DebugServer : calls setup() function
     class Dezibot {}
 
-    Logger --> GenericRobotController : Requests measurement data\n when instructed
-    GenericRobotController -left-> Logger : calls
+    GenericRobotController --> Logger : calls logging function
 
     class GenericRobotController {
 
     }
 
-    Note bottom of GenericRobotController : Example for a Robot Controller\nlike Motion.cpp
+    Note left of GenericRobotController : Example for a Robot Controller\nlike Motion.cpp
 }
 
 
