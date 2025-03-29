@@ -198,13 +198,14 @@ std::vector<Sensor>& DebugServer::getSensors() {
 
 // create a FreeRTOS task to handle client requests
 void DebugServer::beginClientHandle() {
-    xTaskCreate(
+    xTaskCreateUniversal(
         handleClientTask,
         "DebugServerTask",
         4096,
         this,
         20,
-        nullptr
+        nullptr,
+        1
     );
 }
 
