@@ -201,9 +201,9 @@ void DebugServer::beginClientHandle() {
     xTaskCreate(
         handleClientTask,
         "DebugServerTask",
-        8192,
+        4096,
         this,
-        1,
+        20,
         nullptr
     );
 }
