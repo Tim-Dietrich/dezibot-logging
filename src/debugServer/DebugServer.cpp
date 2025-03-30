@@ -17,7 +17,6 @@
 #include <WebServer.h>
 #include <WiFi.h>
 #include <SPIFFS.h>
-
 #include "Utility.h"
 
 WebServer server;
