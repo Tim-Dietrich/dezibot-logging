@@ -18,6 +18,8 @@
 #include <WiFi.h>
 #include <SPIFFS.h>
 
+#include "Utility.h"
+
 WebServer server;
 extern Dezibot dezibot;
 
@@ -99,7 +101,6 @@ void DebugServer::setup() {
        settingsPage->cssHandler();
     });
 
-    // TODO: we also need this, it should always return a 404
     server.onNotFound([this] {
         mainPage->errorPageHandler();
     });
@@ -108,6 +109,13 @@ void DebugServer::setup() {
     Sensor colorSensor("Color Sensor", "ColorDetection");
     SensorFunction getAmbientLight("getAmbientLight()",
         [] { return std::to_string(dezibot.colorDetection.getAmbientLight()); });
+    SensorFunction getRGB("getRGB()",
+        [] { const uint16_t red = dezibot.colorDetection.getColorValue(VEML_RED);
+            const uint16_t green = dezibot.colorDetection.getColorValue(VEML_GREEN);
+            const uint16_t blue = dezibot.colorDetection.getColorValue(VEML_BLUE);
+            // changed order of colour values to match graph colour in liveDataPage
+            return "blue: " + std::to_string(blue) + ", red: " + std::to_string(red) +
+                ", green: " + std::to_string(green);});
     SensorFunction getColorValueRed("getColorValue(RED)",
         [] { return std::to_string(dezibot.colorDetection.getColorValue(VEML_RED)); });
     SensorFunction getColorValueGreen("getColorValue(GREEN)",
@@ -117,6 +125,7 @@ void DebugServer::setup() {
     SensorFunction getColorValueWhite("getColorValue(WHITE)",
         [] { return std::to_string(dezibot.colorDetection.getColorValue(VEML_WHITE)); });
     colorSensor.addFunction(getAmbientLight);
+    colorSensor.addFunction(getRGB);
     colorSensor.addFunction(getColorValueRed);
     colorSensor.addFunction(getColorValueGreen);
     colorSensor.addFunction(getColorValueBlue);
@@ -173,8 +182,9 @@ void DebugServer::setup() {
         [] { Orientation result = Motion::detection.getTilt();
             return "x: " + std::to_string(result.xRotation) + ", y: " + std::to_string(result.yRotation); });
     SensorFunction getTiltDirection("getTiltDirection()",
-        [] { Direction result = Motion::detection.getTiltDirection();
-            return std::to_string(result); });
+        [] { Direction direction = Motion::detection.getTiltDirection();
+            std::string result = Utility::directionToString(direction).c_str();
+            return result; });
     motionSensor.addFunction(getAcceleration);
     motionSensor.addFunction(getRotation);
     motionSensor.addFunction(getTemperature);
