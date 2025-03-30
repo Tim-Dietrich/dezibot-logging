@@ -7,13 +7,18 @@
     <title>Live Data</title>
   </head>
   <body>
+    <!-- Header -->
+    <div class="header-bar">
+      <button onclick="window.location.href='/'">Home</button>
+      <button onclick="window.location.href='/settings'">Go to Settings</button>
+      <button onclick="window.location.href='/logging'">View Logs</button>
+    </div>
     <!-- Page Content -->
-    <a href="/" class="home-button">Home</a>
     <h1 style="text-align:center;">Live Data</h1>
-    <div class="slider">
-      <label>
-        <input type="range" min="50" max="2000" value="100" id="slider-input">
-      </label>
+    <div class="slider-container">
+      <label for="slider-input">Chart Limit:</label>
+      <input type="number" id="slider-value" min="50" max="2000" value="100">
+      <input type="range" min="50" max="2000" value="100" id="slider-input">
     </div>
     <div id="sensor-container" class="sensor-container"></div>
 

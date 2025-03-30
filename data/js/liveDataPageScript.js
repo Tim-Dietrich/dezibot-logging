@@ -1,12 +1,20 @@
 // Slider handling to adjust chartLimit
 const sliderInput = document.getElementById('slider-input');
+const numberInput = document.getElementById('slider-value');
 
-function handleSliderInput(event) {
-    chartLimit = parseInt(event.target.value, 10);
+function updateChartLimit(value) {
+    chartLimit = parseInt(value, 10);
+    // should be kept in bounds, else typing "50" resets the chart to 5
+    if (chartLimit < 50 && chartLimit > 2000) {
+        return;
+    }
+    numberInput.value = chartLimit;
+    sliderInput.value = chartLimit;
     console.log(`Chart limit updated to: ${chartLimit}`);
 }
 
-sliderInput.addEventListener('input', handleSliderInput);
+sliderInput.addEventListener('input', (event) => updateChartLimit(event.target.value));
+numberInput.addEventListener('input', (event) => updateChartLimit(event.target.value));
 
 // Chart management
 const charts = {};
@@ -42,7 +50,11 @@ async function fetchSensorData() {
             } else {
                 const valueElement = document.getElementById(valueElementId);
                 if (valueElement) {
-                    valueElement.textContent = JSON.stringify(sensor.value);
+                    if (sensor.name.includes('TiltDirection')) {
+                        valueElement.textContent = JSON.stringify(tiltDirectionToString(sensor.value));
+                    } else {
+                        valueElement.textContent = JSON.stringify(sensor.value);
+                    }
                 }
             }
 
@@ -55,18 +67,38 @@ async function fetchSensorData() {
     }
 }
 
+// maps numerical direction values to strings
+function tiltDirectionToString(value) {
+    switch (value) {
+        case '0':
+            return 'Front';
+        case '1':
+            return 'Left';
+        case '2':
+            return 'Right';
+        case '3':
+            return 'Back';
+        case '4':
+            return 'Neutral';
+        case '5':
+            return 'Flipped';
+        case '6':
+            return 'Error';
+        default:
+            return "Unknown";
+    }
+}
+
 // Chart creation
 function createChart(chartId, sensorName) {
     dataPoints[chartId] = [[], [], []];
     charts[chartId] = new CanvasJS.Chart(chartId, {
-        // title: { text: sensorName },
         axisY: { title: "Value" },
         data: [
             createDataSeries("x", dataPoints[chartId][0]),
             createDataSeries("y", dataPoints[chartId][1]),
             createDataSeries("z", dataPoints[chartId][2])
         ],
-        // TODO: we could style this, I'll leave it like this for now
         backgroundColor: "transparent"
     });
 }
@@ -106,7 +138,7 @@ function handleIncomingData(chartId, value) {
 
     // Maintain data point limits
     dataPoints[chartId].forEach(dataSeries => {
-        if (dataSeries.length > chartLimit) {
+        while (dataSeries.length > chartLimit) {
             dataSeries.shift();
         }
     });

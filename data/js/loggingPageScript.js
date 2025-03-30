@@ -20,11 +20,12 @@ async function loadLogs(endpoint, logLevel = 'ALL') {
         // create a new row for each log entry
         logs.forEach(log => {
             const row = document.createElement('tr');
+            row.classList.add(log.level.toLowerCase()); // Apply class based on log level
             row.innerHTML = `
-                        <td class=${log.level}>${log.level}</td>
-                        <td>${log.timestamp}</td>
-                        <td>${log.message}</td>
-                    `;
+                <td>${log.level}</td>
+                <td>${log.timestamp}</td>
+                <td>${log.message}</td>
+            `;
             tableBody.appendChild(row);
         });
     } catch (error) {

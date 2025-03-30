@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Dezibot.h>
+#include <logger/Logger.h>
 
 Dezibot dezibot;
 
@@ -15,6 +16,9 @@ void loop() {
     dezibot.colorDetection.getColorValue(VEML_RED);
     dezibot.display.println(i);
     i++;
+    Logger::getInstance().logDebug("Hello World");
+    Logger::getInstance().logError("Hello World");
+    Logger::getInstance().logWarning("Hello World");
     delay(30000);
 
     // dezibot.motion.move();
