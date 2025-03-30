@@ -24,7 +24,7 @@ private:
     LoggingPage* loggingPage;
     LiveDataPage* liveDataPage;
     SettingsPage* settingsPage;
-    bool serveractive = true;
+    bool serverActive = true;
 
     /**
      * @brief Periodically handle client requests to the webserver.
@@ -33,13 +33,14 @@ private:
      */
     static void handleClientTask(void* parameter);
     std::vector<Sensor> sensors;
+    static inline TaskHandle_t taskHandle;
 public:
     DebugServer();
 
     /**
      * @brief Set up the DebugServer.
      * Initialize all webpage and sensor objects.
-     * Configure dezibot as wifi accesspoint and set ip configuration and credentials.
+     * Configure dezibot as wi-fi accesspoint and set ip configuration and credentials.
      * @return void
      */
     void setup();

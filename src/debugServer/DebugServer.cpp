@@ -99,7 +99,6 @@ void DebugServer::setup() {
        settingsPage->cssHandler();
     });
 
-    // TODO: we also need this, it should always return a 404
     server.onNotFound([this] {
         mainPage->errorPageHandler();
     });
@@ -108,6 +107,13 @@ void DebugServer::setup() {
     Sensor colorSensor("Color Sensor", "ColorDetection");
     SensorFunction getAmbientLight("getAmbientLight()",
         [] { return std::to_string(dezibot.colorDetection.getAmbientLight()); });
+    SensorFunction getRGB("getRGB()",
+        [] { const uint16_t red = dezibot.colorDetection.getColorValue(VEML_RED);
+            const uint16_t green = dezibot.colorDetection.getColorValue(VEML_GREEN);
+            const uint16_t blue = dezibot.colorDetection.getColorValue(VEML_BLUE);
+            // changed order of colour values to match graph colour in liveDataPage
+            return "blue: " + std::to_string(blue) + ", red: " + std::to_string(red) +
+                ", green: " + std::to_string(green);});
     SensorFunction getColorValueRed("getColorValue(RED)",
         [] { return std::to_string(dezibot.colorDetection.getColorValue(VEML_RED)); });
     SensorFunction getColorValueGreen("getColorValue(GREEN)",
@@ -117,6 +123,7 @@ void DebugServer::setup() {
     SensorFunction getColorValueWhite("getColorValue(WHITE)",
         [] { return std::to_string(dezibot.colorDetection.getColorValue(VEML_WHITE)); });
     colorSensor.addFunction(getAmbientLight);
+    colorSensor.addFunction(getRGB);
     colorSensor.addFunction(getColorValueRed);
     colorSensor.addFunction(getColorValueGreen);
     colorSensor.addFunction(getColorValueBlue);
@@ -158,9 +165,11 @@ void DebugServer::setup() {
     // initialize motion sensor
     Sensor motionSensor("Motion Sensor", "MotionDetection");
     SensorFunction getAcceleration("getAcceleration()",
-        [] { IMUResult result = Motion::detection.getAcceleration();
+        [] {
+            IMUResult result = Motion::detection.getAcceleration();
             return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " +
-                std::to_string(result.z); });
+                std::to_string(result.z);
+    });
     SensorFunction getRotation("getRotation()",
         [] { IMUResult result = Motion::detection.getRotation();
             return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " +
@@ -170,8 +179,15 @@ void DebugServer::setup() {
     SensorFunction getWhoAmI("getWhoAmI()",
         [] { return std::to_string(Motion::detection.getWhoAmI()); });
     SensorFunction getTilt("getTilt()",
-        [] { Orientation result = Motion::detection.getTilt();
-            return "x: " + std::to_string(result.xRotation) + ", y: " + std::to_string(result.yRotation); });
+        [] {
+            Orientation result = Motion::detection.getTilt();
+            // Because an INT_MAX makes the graph practically unusable, instead send 0
+            if (result.xRotation == INT_MAX && result.yRotation == INT_MAX) {
+                result.xRotation = 0;
+                result.yRotation = 0;
+            }
+            return "x: " + std::to_string(result.xRotation) + ", y: " + std::to_string(result.yRotation);
+    });
     SensorFunction getTiltDirection("getTiltDirection()",
         [] { Direction result = Motion::detection.getTiltDirection();
             return std::to_string(result); });
@@ -198,26 +214,30 @@ std::vector<Sensor>& DebugServer::getSensors() {
 
 // create a FreeRTOS task to handle client requests
 void DebugServer::beginClientHandle() {
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         handleClientTask,
         "DebugServerTask",
         4096,
         this,
-        20,
-        nullptr
+        11,
+        &taskHandle,
+        1
     );
 }
 
 // handle client requests
 void DebugServer::handleClientTask(void* parameter) {
-     auto debugServer = static_cast<DebugServer*>(parameter);
+    const auto debugServer = static_cast<DebugServer*>(parameter);
+    TickType_t xLastWakeTime;
 
-    // continuously handle client requests
-    while (debugServer->serveractive) {
+     // continuously handle client requests
+    while (debugServer->serverActive) {
+        constexpr TickType_t xFrequency = 25;
         debugServer->server.handleClient();
-        delay(10);
+        xLastWakeTime = xTaskGetTickCount();
+        xTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 
     // Delete task when server is no longer active
-    vTaskDelete(nullptr);
+    vTaskDelete(taskHandle);
 }

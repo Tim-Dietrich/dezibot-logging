@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0 0 10px;
 }
 
 h1 {
@@ -32,23 +32,6 @@ th {
     background-color: #f2f2f2;
 }
 
-.home-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #007BFF;
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.home-button:hover {
-    background-color: #0056b3;
-}
-
 .log-level {
     margin-top: 20px;
 }
@@ -68,6 +51,56 @@ th {
     background-color: #0056b3;
 }
 
-.ERROR {
-    color: red;
+/* Color coding for log levels */
+.info {
+    /*background-color: #eeeeee;*/
+    color: #333333;
+}
+
+.warning {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+    font-weight: bold;
+}
+
+.error {
+    background-color: #f2dede;
+    color: #a94442;
+    font-weight: bold;
+}
+
+.debug {
+    background-color: #dfd8f0;
+    color: #513c76;
+    font-weight: bold;
+}
+
+.trace {
+    background-color: #d9edf7;
+    color: #31708f;
+}
+
+/* Header */
+
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007BFF;
+    padding: 10px 20px;
+}
+
+.header-bar button {
+    background-color: white;
+    color: #007BFF;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.header-bar button:hover {
+    background-color: #e0e0e0;
 }

@@ -30,13 +30,16 @@ void MotionDetection::end(void){
     this->writeRegister(PWR_MGMT0,0x00);
 };
 IMUResult MotionDetection::getAcceleration(){
+    stopFIFO();
     IMUResult result;
     result.x = readRegister(ACCEL_DATA_X_HIGH)<<8 | readRegister(ACCEL_DATA_X_LOW);
     result.y = readRegister(ACCEL_DATA_Y_HIGH)<<8 | readRegister(ACCEL_DATA_Y_LOW);
     result.z = readRegister(ACCEL_DATA_Z_HIGH)<<8 | readRegister(ACCEL_DATA_Z_LOW);
+    startFIFO();
     return result;
 };
 IMUResult MotionDetection::getRotation(){
+    stopFIFO();
     IMUResult result;
     result.x = readRegister(GYRO_DATA_X_HIGH) <<8;
     result.x |= readRegister(GYRO_DATA_X_LOW);
@@ -44,11 +47,14 @@ IMUResult MotionDetection::getRotation(){
     result.y |= readRegister(GYRO_DATA_Y_LOW);
     result.z = readRegister(GYRO_DATA_Z_HIGH)<<8;
     result.z |= readRegister(GYRO_DATA_Z_LOW);
+    startFIFO();
     return result;
 };
 float MotionDetection::getTemperature(){
+    stopFIFO();
     int16_t raw_temperatur = readRegister(REG_TEMP_HIGH)<<8;
-    raw_temperatur |= readRegister(REG_TEMP_LOW); 
+    raw_temperatur |= readRegister(REG_TEMP_LOW);
+    startFIFO();
     return raw_temperatur/128 +25;
 };
 
@@ -80,6 +86,7 @@ void MotionDetection::calibrateZAxis(uint gforceValue){
 };
 
 Orientation MotionDetection::getTilt(){
+    stopFIFO();
     uint tolerance = 200;
     IMUResult reading = this->getAcceleration();
     bool flipped = reading.z < 0;
@@ -126,6 +133,8 @@ Orientation MotionDetection::getTilt(){
         + " y= "
         + std::to_string(result.yRotation)
     );
+
+    startFIFO();
 
     return result;
 
@@ -270,13 +279,17 @@ void MotionDetection::startFIFO(){
     this->writeRegister(INTF_CONFIG0,0x60);
     //set FIFO_CONFIG1 to BYPASS Off
     this->writeRegister(FIFO_CONFIG1,0x00);
+    FIFOIsOff = false;
 }
 
 void MotionDetection::stopFIFO(){
-    //set INTF_CONFIG0 FIFO_COUNT_FORMAT to bytes and SENSOR_DATA_ENDIAN to Little Endian (default)
-    this->writeRegister(INTF_CONFIG0,0x30);
-    //set FIFO_CONFIG1 BYPASS On
-    this->writeRegister(FIFO_CONFIG1,0x01);
+    if (!FIFOIsOff) {
+        //set INTF_CONFIG0 FIFO_COUNT_FORMAT to bytes and SENSOR_DATA_ENDIAN to Little Endian (default)
+        this->writeRegister(INTF_CONFIG0,0x30);
+        //set FIFO_CONFIG1 BYPASS On
+        this->writeRegister(FIFO_CONFIG1,0x01);
+        FIFOIsOff = true;
+    }
 }
 
 uint MotionDetection::getDataFromFIFO(FIFO_Package* buffer){

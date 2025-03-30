@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0;
 }
 
 h1 {
@@ -74,19 +74,25 @@ input:checked + .slider:before {
     transform: translateX(25px);
 }
 
-.home-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: #007BFF;
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: bold;
+    padding: 10px 20px;
 }
 
-.home-button:hover {
-    background-color: #0056b3;
+.header-bar button {
+    background-color: white;
+    color: #007BFF;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.header-bar button:hover {
+    background-color: #e0e0e0;
 }

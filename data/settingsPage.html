@@ -7,7 +7,13 @@
     <link rel="stylesheet" href="/css/settingsPageStyle.css">
 </head>
 <body>
-<a href="/" class="home-button">Home</a>
+<!-- Header -->
+<div class="header-bar">
+    <button onclick="window.location.href='/'">Home</button>
+    <button onclick="window.location.href='/livedata'">View Live Data</button>
+    <button onclick="window.location.href='/logging'">View Logs</button>
+</div>
+<!-- Page Content -->
 <h1>Sensor Settings</h1>
 <div class="sensor-container" id="sensor-container"></div>
 <script src="/js/settingsPageScript.js"></script>
