@@ -174,3 +174,7 @@ This project uses the following third-party libraries:
     - Vishay VEML6040 RGBW color sensor library for Arduino
     - Licensed under the MIT license
     - For more information, see the [library's repository](https://github.com/thewknd/VEML6040/blob/master/LICENSE)
+
+- `canvasJS` (version v3.12.7 GA) by [Fenopix, Inc.](https://canvasjs.com/)
+  - Provides a javascript based graph library
+  - Licensed under the Creative Commons Attribution-NonCommercial 3.0 License for non-commercial purposes
