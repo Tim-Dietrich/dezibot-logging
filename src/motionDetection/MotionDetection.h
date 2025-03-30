@@ -50,6 +50,7 @@ struct FIFO_Package{
 
 class MotionDetection{
 protected:
+    boolean FIFOIsOff = false;
     enum registerBank{MREG1,MREG2,MREG3};
     static const uint frequency = 24000000;
     static const uint16_t defaultShakeThreshold = 500;

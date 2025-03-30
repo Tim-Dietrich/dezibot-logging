@@ -17,7 +17,6 @@
 #include <WebServer.h>
 #include <WiFi.h>
 #include <SPIFFS.h>
-#include "Utility.h"
 
 WebServer server;
 extern Dezibot dezibot;
@@ -166,9 +165,11 @@ void DebugServer::setup() {
     // initialize motion sensor
     Sensor motionSensor("Motion Sensor", "MotionDetection");
     SensorFunction getAcceleration("getAcceleration()",
-        [] { IMUResult result = Motion::detection.getAcceleration();
+        [] {
+            IMUResult result = Motion::detection.getAcceleration();
             return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " +
-                std::to_string(result.z); });
+                std::to_string(result.z);
+    });
     SensorFunction getRotation("getRotation()",
         [] { IMUResult result = Motion::detection.getRotation();
             return "x: " + std::to_string(result.x) + ", y: " + std::to_string(result.y) + ", z: " +
@@ -178,12 +179,18 @@ void DebugServer::setup() {
     SensorFunction getWhoAmI("getWhoAmI()",
         [] { return std::to_string(Motion::detection.getWhoAmI()); });
     SensorFunction getTilt("getTilt()",
-        [] { Orientation result = Motion::detection.getTilt();
-            return "x: " + std::to_string(result.xRotation) + ", y: " + std::to_string(result.yRotation); });
+        [] {
+            Orientation result = Motion::detection.getTilt();
+            // Because an INT_MAX makes the graph practically unusable, instead send 0
+            if (result.xRotation == INT_MAX && result.yRotation == INT_MAX) {
+                result.xRotation = 0;
+                result.yRotation = 0;
+            }
+            return "x: " + std::to_string(result.xRotation) + ", y: " + std::to_string(result.yRotation);
+    });
     SensorFunction getTiltDirection("getTiltDirection()",
-        [] { Direction direction = Motion::detection.getTiltDirection();
-            std::string result = Utility::directionToString(direction).c_str();
-            return result; });
+        [] { Direction result = Motion::detection.getTiltDirection();
+            return std::to_string(result); });
     motionSensor.addFunction(getAcceleration);
     motionSensor.addFunction(getRotation);
     motionSensor.addFunction(getTemperature);
@@ -207,26 +214,30 @@ std::vector<Sensor>& DebugServer::getSensors() {
 
 // create a FreeRTOS task to handle client requests
 void DebugServer::beginClientHandle() {
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         handleClientTask,
         "DebugServerTask",
         4096,
         this,
-        20,
-        nullptr
+        11,
+        &taskHandle,
+        1
     );
 }
 
 // handle client requests
 void DebugServer::handleClientTask(void* parameter) {
-     auto debugServer = static_cast<DebugServer*>(parameter);
+    const auto debugServer = static_cast<DebugServer*>(parameter);
+    TickType_t xLastWakeTime;
 
-    // continuously handle client requests
-    while (debugServer->serveractive) {
+     // continuously handle client requests
+    while (debugServer->serverActive) {
+        constexpr TickType_t xFrequency = 25;
         debugServer->server.handleClient();
-        delay(10);
+        xLastWakeTime = xTaskGetTickCount();
+        xTaskDelayUntil(&xLastWakeTime, xFrequency);
     }
 
     // Delete task when server is no longer active
-    vTaskDelete(nullptr);
+    vTaskDelete(taskHandle);
 }
