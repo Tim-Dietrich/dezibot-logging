@@ -1,6 +1,14 @@
-//
-// Created by timdi on 27/01/2025.
-//
+/**
+* @file LogEntry.h
+ * @author Tim Dietrich, Felix Herrling
+ * @brief This struct serves as the basic structure of every log entry, where
+ * every log entry contains an enum based log level, a timestamp and a message.
+ * @version 1.0
+ * @date 2025-03-30
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
 
 #ifndef LOGENTRY_H
 #define LOGENTRY_H
