@@ -30,6 +30,7 @@ void MotionDetection::end(void){
     this->writeRegister(PWR_MGMT0,0x00);
 };
 IMUResult MotionDetection::getAcceleration(){
+    // Workaround to prevent FIFO from creating faulty data
     stopFIFO();
     IMUResult result;
     result.x = readRegister(ACCEL_DATA_X_HIGH)<<8 | readRegister(ACCEL_DATA_X_LOW);
@@ -39,6 +40,7 @@ IMUResult MotionDetection::getAcceleration(){
     return result;
 };
 IMUResult MotionDetection::getRotation(){
+    // Workaround to prevent FIFO from creating faulty data
     stopFIFO();
     IMUResult result;
     result.x = readRegister(GYRO_DATA_X_HIGH) <<8;
@@ -51,6 +53,7 @@ IMUResult MotionDetection::getRotation(){
     return result;
 };
 float MotionDetection::getTemperature(){
+    // Workaround to prevent FIFO from creating faulty data
     stopFIFO();
     int16_t raw_temperatur = readRegister(REG_TEMP_HIGH)<<8;
     raw_temperatur |= readRegister(REG_TEMP_LOW);
@@ -86,6 +89,7 @@ void MotionDetection::calibrateZAxis(uint gforceValue){
 };
 
 Orientation MotionDetection::getTilt(){
+    // Workaround to prevent FIFO from creating faulty data
     stopFIFO();
     uint tolerance = 200;
     IMUResult reading = this->getAcceleration();
@@ -175,7 +179,6 @@ Direction MotionDetection::getTiltDirection(uint tolerance){
 
     }
 
-    // TODO: convert result enum to string
     Logger::getInstance().logInfo(
         "Getting tilt direction with value "
         + result
@@ -283,6 +286,7 @@ void MotionDetection::startFIFO(){
 }
 
 void MotionDetection::stopFIFO(){
+    // to avoid duplication, check that FIFO isn't already disabled
     if (!FIFOIsOff) {
         //set INTF_CONFIG0 FIFO_COUNT_FORMAT to bytes and SENSOR_DATA_ENDIAN to Little Endian (default)
         this->writeRegister(INTF_CONFIG0,0x30);
